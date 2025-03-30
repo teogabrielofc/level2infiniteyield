@@ -27,3 +27,6 @@ A: Because is in PlayerGui, not CoreGui, but i am trying to make it not removed.
 
 Q: Why does it get stuck when I open it?
 A: I don't know either, so respawn and run again.
+
+Q: Why when I put the command in the chat it doesn't go?
+A: It only supports legacy chat, it doesn't work on the new one.
