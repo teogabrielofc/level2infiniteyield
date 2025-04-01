@@ -12,7 +12,7 @@ if not game:IsLoaded() then
 	notLoaded:Destroy()
 end
 
-ver = '1.0.b5.1'
+ver = '1.1b5.1'
 
 Players = game:GetService("Players")
 
@@ -4625,6 +4625,7 @@ CMDs[#CMDs + 1] = {NAME = 'reset', DESC = 'Resets your character normally'}
 CMDs[#CMDs + 1] = {NAME = 'respawn', DESC = 'Respawns you'}
 CMDs[#CMDs + 1] = {NAME = 'refresh / re', DESC = 'Respawns and brings you back to the same position'}
 CMDs[#CMDs + 1] = {NAME = 'god', DESC = 'Makes your character difficult to kill in most games'}
+CMDs[#CMDs + 1] = {NAME = 'permadeath', DESC = 'Makes you unable to die'}
 CMDs[#CMDs + 1] = {NAME = 'invisible / invis', DESC = 'Makes you invisible to other players'}
 CMDs[#CMDs + 1] = {NAME = 'visible / vis', DESC = 'Makes you visible to other players'}
 CMDs[#CMDs + 1] = {NAME = 'toolinvisible / toolinvis / tinvis', DESC = 'Makes you invisible to other players and able to use tools'}
@@ -4638,6 +4639,7 @@ CMDs[#CMDs + 1] = {NAME = 'unloopjumppower / unloopjp [num]', DESC = 'Turns off 
 CMDs[#CMDs + 1] = {NAME = 'maxslopeangle / msa [num]', DESC = 'Adjusts MaxSlopeAngle'}
 CMDs[#CMDs + 1] = {NAME = 'gravity / grav [num] (CLIENT)', DESC = 'Change your gravity'}
 CMDs[#CMDs + 1] = {NAME = 'sit', DESC = 'Makes your character sit'}
+CMDs[#CMDs + 1] = {NAME = 'lay / laydown', DESC = 'Makes your character lay down'}
 CMDs[#CMDs + 1] = {NAME = 'sitwalk', DESC = 'Makes your character sit while still being able to walk'}
 CMDs[#CMDs + 1] = {NAME = 'nosit', DESC = 'Prevents your character from sitting'}
 CMDs[#CMDs + 1] = {NAME = 'unnosit', DESC = 'Disables nosit'}
@@ -4742,6 +4744,22 @@ CMDs[#CMDs + 1] = {NAME = 'reloadplugin [name]', DESC = 'Reloads a plugin'}
 CMDs[#CMDs + 1] = {NAME = '', DESC = ''}
 CMDs[#CMDs + 1] = {NAME = 'breakloops / break (cmd loops)', DESC = 'Stops any cmd loops (;100^1^cmd)'}
 CMDs[#CMDs + 1] = {NAME = 'removecmd / deletecmd', DESC = 'Removes a command until the admin is reloaded'}
+CMDs[#CMDs + 1] = {NAME = 'notifyping / ping', DESC = 'Notify yourself your ping'}
+CMDs[#CMDs + 1] = {NAME = 'trip', DESC = 'Makes your character fall over'}
+CMDs[#CMDs + 1] = {NAME = 'norender', DESC = 'Disable 3d Rendering to decrease the amount of CPU the client uses'}
+CMDs[#CMDs + 1] = {NAME = 'render', DESC = 'Enable 3d Rendering'}
+CMDs[#CMDs + 1] = {NAME = 'use2022materials / 2022materials', DESC = 'Enables 2022 material textures'}
+CMDs[#CMDs + 1] = {NAME = 'unuse2022materials / un2022materials', DESC = 'Disables 2022 material textures'}
+CMDs[#CMDs + 1] = {NAME = 'promptr6', DESC = 'Prompts the game to switch your rig type to R6'}
+CMDs[#CMDs + 1] = {NAME = 'promptr15', DESC = 'Prompts the game to switch your rig type to R15'}
+CMDs[#CMDs + 1] = {NAME = 'removeads / adblock', DESC = 'Automatically removes ad billboards'}
+CMDs[#CMDs + 1] = {NAME = 'scare / spook [player]', DESC = 'Teleports in front of a player for half a second'}
+CMDs[#CMDs + 1] = {NAME = 'alignmentkeys', DESC = 'Enables the left and right alignment keys (comma and period)'}
+CMDs[#CMDs + 1] = {NAME = 'ctrllock', DESC = 'Binds Shiftlock to LeftControl'}
+CMDs[#CMDs + 1] = {NAME = 'unctrllock', DESC = 'Re-binds Shiftlock to LeftShift'}
+CMDs[#CMDs + 1] = {NAME = 'listento [player]', DESC = 'Listens to the area around a player. Can also eavesdrop with vc'}
+CMDs[#CMDs + 1] = {NAME = 'unlistento', DESC = 'Disables listento'}
+CMDs[#CMDs + 1] = {NAME = 'unsuspendvc', DESC = 'Unsuspends you from voice chat'}
 wait()
 
 for i = 1, #CMDs do
@@ -9193,6 +9211,16 @@ addcmd('sit',{},function(args, speaker)
 	speaker.Character:FindFirstChildOfClass("Humanoid").Sit = true
 end)
 
+addcmd("lay", {"laydown"}, function(args, speaker)
+	local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
+	humanoid.Sit = true
+	task.wait(0.1)
+	humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0)
+	for _, v in ipairs(humanoid:GetPlayingAnimationTracks()) do
+		v:Stop()
+	end
+end)
+
 addcmd('sitwalk',{},function(args, speaker)
 	local anims = speaker.Character.Animate
 	local sit = anims.sit:FindFirstChildOfClass("Animation").AnimationId
@@ -10772,49 +10800,45 @@ end)
 
 flinging = false
 addcmd('fling',{},function(args, speaker)
+	flinging = false
 	for _, child in pairs(speaker.Character:GetDescendants()) do
 		if child:IsA("BasePart") then
-			child.CustomPhysicalProperties = PhysicalProperties.new(2, 0.3, 0.5)
+			child.CustomPhysicalProperties = PhysicalProperties.new(math.huge, 0.3, 0.5)
 		end
 	end
-	execCmd('noclip nonotify')
+	execCmd('noclip')
 	wait(.1)
 	local bambam = Instance.new("BodyAngularVelocity")
 	bambam.Name = randomString()
 	bambam.Parent = getRoot(speaker.Character)
-	bambam.AngularVelocity = Vector3.new(0,311111,0)
-	bambam.MaxTorque = Vector3.new(0,311111,0)
+	bambam.AngularVelocity = Vector3.new(0,99999,0)
+	bambam.MaxTorque = Vector3.new(0,math.huge,0)
 	bambam.P = math.huge
-	local function PauseFling()
-		if speaker.Character:FindFirstChildOfClass("Humanoid") then
-			if speaker.Character:FindFirstChildOfClass("Humanoid").FloorMaterial == Enum.Material.Air then
-				bambam.AngularVelocity = Vector3.new(0,0,0)
-			else
-				bambam.AngularVelocity = Vector3.new(0,311111,0)
-			end
+	local Char = speaker.Character:GetChildren()
+	for i, v in next, Char do
+		if v:IsA("BasePart") then
+			v.CanCollide = false
+			v.Massless = true
+			v.Velocity = Vector3.new(0, 0, 0)
 		end
 	end
-	if TouchingFloor then
-		TouchingFloor:Disconnect()
-	end
-	if TouchingFloorReset then
-		TouchingFloorReset:Disconnect()
-	end
-	TouchingFloor = speaker.Character:FindFirstChildOfClass("Humanoid"):GetPropertyChangedSignal("FloorMaterial"):Connect(PauseFling)
 	flinging = true
-	local function flingDied()
+	local function flingDiedF()
 		execCmd('unfling')
 	end
-	TouchingFloorReset = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(flingDied)
+	flingDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(flingDiedF)
+	repeat
+		bambam.AngularVelocity = Vector3.new(0,99999,0)
+		wait(.2)
+		bambam.AngularVelocity = Vector3.new(0,0,0)
+		wait(.1)
+	until flinging == false
 end)
 
 addcmd('unfling',{'nofling'},function(args, speaker)
-	execCmd('clip nonotify')
-	if TouchingFloor then
-		TouchingFloor:Disconnect()
-	end
-	if TouchingFloorReset then
-		TouchingFloorReset:Disconnect()
+	execCmd('clip')
+	if flingDied then
+		flingDied:Disconnect()
 	end
 	flinging = false
 	wait(.1)
@@ -11613,6 +11637,186 @@ end)
 
 addcmd('removecmd',{'deletecmd'},function(args, speaker)
 	removecmd(args[1])
+end)
+
+addcmd('notifyping',{'ping'},function(args, speaker)
+	notify("Ping", math.round(speaker:GetNetworkPing() * 1000) .. "ms")
+end)
+
+addcmd('trip',{},function(args, speaker)
+	if speaker and speaker.Character and speaker.Character:FindFirstChildOfClass("Humanoid") and getRoot(speaker.Character) then
+		local hum = speaker.Character:FindFirstChildOfClass("Humanoid")
+		local root = getRoot(speaker.Character)
+		hum:ChangeState(0)
+		root.Velocity = root.CFrame.LookVector * 30
+	end
+end)
+
+addcmd('norender',{},function(args, speaker)
+	RunService:Set3dRenderingEnabled(false)
+end)
+
+addcmd('render',{},function(args, speaker)
+	RunService:Set3dRenderingEnabled(true)
+end)
+
+addcmd('2022materials',{'use2022materials'},function(args, speaker)
+	if sethidden then
+		sethidden(MaterialService, "Use2022Materials", true)
+	else
+		notify('Incompatible Exploit','Your exploit does not support this command (missing sethiddenproperty)')
+	end
+end)
+
+addcmd('un2022materials',{'unuse2022materials'},function(args, speaker)
+	if sethidden then
+		sethidden(MaterialService, "Use2022Materials", false)
+	else
+		notify('Incompatible Exploit','Your exploit does not support this command (missing sethiddenproperty)')
+	end
+end)
+
+promptNewRig = function(speaker, rig)
+	local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
+	if humanoid then
+		AvatarEditorService:PromptSaveAvatar(humanoid.HumanoidDescription, Enum.HumanoidRigType[rig])
+		local result = AvatarEditorService.PromptSaveAvatarCompleted:Wait()
+		if result == Enum.AvatarPromptResult.Success then
+			execCmd("reset")
+		end
+	end
+end
+
+addcmd("promptr6", {}, function(args, speaker)
+	promptNewRig(speaker, "R6")
+end)
+
+addcmd("promptr15", {}, function(args, speaker)
+	promptNewRig(speaker, "R15")
+end)
+
+addcmd("removeads", {"adblock"}, function(args, speaker)
+    while wait() do
+        pcall(function()
+            for i, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("PackageLink") then
+                    if v.Parent:FindFirstChild("ADpart") then
+                        v.Parent:Destroy()
+                    end
+                    if v.Parent:FindFirstChild("AdGuiAdornee") then
+                        v.Parent.Parent:Destroy()
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+addcmd("scare", {"spook"}, function(args, speaker)
+    local players = getPlayer(args[1], speaker)
+    local oldpos = nil
+
+    for _, v in pairs(players) do
+        local root = speaker.Character and getRoot(speaker.Character)
+        local target = Players[v]
+        local targetRoot = target and target.Character and getRoot(target.Character)
+
+        if root and targetRoot and target ~= speaker then
+            oldpos = root.CFrame
+            root.CFrame = targetRoot.CFrame + targetRoot.CFrame.lookVector * 2
+            root.CFrame = CFrame.new(root.Position, targetRoot.Position)
+            task.wait(0.5)
+            root.CFrame = oldpos
+        end
+    end
+end)
+
+addcmd("alignmentkeys", {}, function(args, speaker)
+    alignmentKeys = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == Enum.KeyCode.Comma then workspace.CurrentCamera:PanUnits(-1) end
+        if input.KeyCode == Enum.KeyCode.Period then workspace.CurrentCamera:PanUnits(1) end
+    end)
+    alignmentKeysEmotes = StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.EmotesMenu)
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.EmotesMenu, false)
+end)
+
+addcmd("unalignmentkeys", {"noalignmentkeys"}, function(args, speaker)
+    if type(alignmentKeysEmotes) == "boolean" then
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.EmotesMenu, alignmentKeysEmotes)
+    end
+    alignmentKeys:Disconnect()
+end)
+
+addcmd("ctrllock", {}, function(args, speaker)
+    local mouseLockController = speaker.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("MouseLockController")
+    local boundKeys = mouseLockController:FindFirstChild("BoundKeys")
+
+    if boundKeys then
+        boundKeys.Value = "LeftControl"
+    else
+        boundKeys = Instance.new("StringValue")
+        boundKeys.Name = "BoundKeys"
+        boundKeys.Value = "LeftControl"
+        boundKeys.Parent = mouseLockController
+    end
+end)
+
+addcmd("unctrllock", {}, function(args, speaker)
+    local mouseLockController = speaker.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("CameraModule"):WaitForChild("MouseLockController")
+    local boundKeys = mouseLockController:FindFirstChild("BoundKeys")
+
+    if boundKeys then
+        boundKeys.Value = "LeftShift"
+    else
+        boundKeys = Instance.new("StringValue")
+        boundKeys.Name = "BoundKeys"
+        boundKeys.Value = "LeftShift"
+        boundKeys.Parent = mouseLockController
+    end
+end)
+
+addcmd("listento", {}, function(args, speaker)
+    execCmd("unlistento")
+    if not args[1] then return end
+
+    local player = Players:FindFirstChild(getPlayer(args[1], speaker)[1])
+    local root = player and player.Character and getRoot(player.Character)
+
+    if root then
+        SoundService:SetListener(Enum.ListenerType.ObjectPosition, root)
+        listentoChar = player.CharacterAdded:Connect(function()
+            repeat task.wait() until Players[player.Name].Character ~= nil and getRoot(Players[player.Name].Character)
+            SoundService:SetListener(Enum.ListenerType.ObjectPosition, getRoot(Players[player.Name].Character))
+        end)
+    end
+end)
+
+addcmd("unlistento", {}, function(args, speaker)
+    SoundService:SetListener(Enum.ListenerType.Camera)
+    listentoChar:Disconnect()
+end)
+
+addcmd("unsuspendvc", {}, function(args, speaker)
+    VoiceChatService:joinVoice()
+end)
+
+addcmd("permadeath", {}, function(args, speaker)
+    if replicatesignal then
+        permadeath(speaker)
+        notify("Permadeath", "Enabled")
+    else
+        notify("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
+    end
+end)
+
+addcmd("permadeath", {}, function(args, speaker)
+    if replicatesignal then
+        permadeath(speaker)
+        notify("Permadeath", "Enabled")
+    else
+        notify("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
+    end
 end)
 
 updateColors(currentShade1,shade1)
