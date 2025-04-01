@@ -12,7 +12,7 @@ if not game:IsLoaded() then
 	notLoaded:Destroy()
 end
 
-ver = '1.1b5.1'
+ver = '1.1.1b5.1'
 
 Players = game:GetService("Players")
 
@@ -220,7 +220,7 @@ Title.BorderSizePixel = 0
 Title.Size = UDim2.new(0, 250, 0, 20)
 Title.Font = Enum.Font.SourceSans
 Title.TextSize = 18
-Title.Text = "Level 2 Infinite Yield FE v"..ver
+Title.Text = "Level 2 Infinite Yield v"..ver
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.ZIndex = 10
 table.insert(shade1,Title)
@@ -8830,6 +8830,7 @@ invisRunning = false
 addcmd('invisible',{'invis'},function(args, speaker)
 	if invisRunning then return end
 	invisRunning = true
+	permadeath(speaker)
 	-- Full credit to AmokahFox @V3rmillion
 	local Player = speaker
 	repeat wait(.1) until Player.Character
@@ -11801,14 +11802,12 @@ addcmd("unsuspendvc", {}, function(args, speaker)
     VoiceChatService:joinVoice()
 end)
 
-addcmd("permadeath", {}, function(args, speaker)
+function permadeath(plr)
     if replicatesignal then
-        permadeath(speaker)
-        notify("Permadeath", "Enabled")
-    else
-        notify("Incompatible Exploit", "Your exploit does not support this command (missing replicatesignal)")
+        replicatesignal(plr.ConnectDiedSignalBackend)
+        task.wait(Players.RespawnTime - 0.165)
     end
-end)
+end
 
 addcmd("permadeath", {}, function(args, speaker)
     if replicatesignal then
