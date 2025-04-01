@@ -3,7 +3,7 @@ The best command line script for roblox, now on Level 2 Exploits.
 
 Get it [here](https://raw.githubusercontent.com/teogabrielofc/level2infiniteyield/refs/heads/main/source)
 
- - Currently 336 commands
+ - Currently 354 commands
  - Open Source
 
 ## Developers
